@@ -1,0 +1,20 @@
+{
+  "name": "white_hole2",
+  "version": "1.0.0",
+  "description": "discordbot",
+  "main": "main.js",
+  "scripts": {
+    "test": "node ."
+  },
+  "keywords": [
+    "discordjs"
+  ],
+  "author": "maix",
+  "license": "ISC",
+  "dependencies": {
+    "@types/mongoose": "^5.5.6",
+    "@types/node": "^12.0.8",
+    "discord.js": "^11.5.1",
+    "mongoose": "^5.5.15"
+  }
+}
