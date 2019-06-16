@@ -1,13 +1,6 @@
 "use strict";
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const Mongoose = __importStar(require("mongoose"));
+const Mongoose = require("mongoose");
 const Perms = require("../permissions.json");
 const Schemas = {
     Perms: require("../models/permission")
@@ -83,7 +76,7 @@ module.exports = {
                 else {
                     uPermsList[args[2]] = 1;
                     let nPerm = CreatePermissionsIntFromObj(uPermsList);
-                    Schemas.Perms.UpdateOne({
+                    Schemas.Perms.updateOne({
                         _id: uPermsData._id
                     }, {
                         permission: CreatePermissionsIntFromObj(uPermsList)
@@ -106,7 +99,7 @@ module.exports = {
                 }
                 ruPermsList[args[2]] = 0;
                 let nPerm = CreatePermissionsIntFromObj(ruPermsList);
-                Schemas.Perms.UpdateOne({
+                Schemas.Perms.updateOne({
                     _id: ruPermsData._id
                 }, {
                     permission: CreatePermissionsIntFromObj(ruPermsList)

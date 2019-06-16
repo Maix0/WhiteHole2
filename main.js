@@ -10,6 +10,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Discord = __importStar(require("discord.js"));
 const fs = __importStar(require("fs"));
 const Mongoose = require("mongoose");
+// import * as Mongoose from "mongoose"
 const config = require("./config.json");
 const Schemas = {
     UserData: require("./models/userData"),
@@ -39,8 +40,14 @@ for (const file of commandFiles) {
     bot.commands.set(command.name, command);
 }
 Mongoose.connect(config._DataBaseURL, {
+    useNewUrlParser: true,
+    user: config._dbusername,
+    pass: config._dbpassword,
+    dbName: config._dbname
+} /* {
+    
     useNewUrlParser: true
-}).then(() => {
+} */).then(() => {
     console.log("Connected To DataBase");
 });
 bot.on("ready", async function () {
