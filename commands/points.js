@@ -58,7 +58,7 @@ module.exports = {
         if (!userData && (Boolean(args[3]) == false)) {
             return message.channel.send("Error: userData isn't created");
         }
-        else if (Boolean(args[3])) {
+        else if (Boolean(args[3]) && !userData) {
             userData = await createUserData(message.guild.id, tUser.id);
         }
         let ogPoints = userData.pointsModule.points;
