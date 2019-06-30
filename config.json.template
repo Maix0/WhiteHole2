@@ -1,0 +1,9 @@
+{
+        "_PREFIX":"discorf prefix",
+        "_TOKEN":"Disxord token",
+        "_PointsDelay": 120000,
+        "_DataBaseURL": "mongod://127.0.0.1/",
+        "_dbname":"Database name",
+        "_dbusername":"database user name",
+        "_dbpassword":"database user password"
+}
