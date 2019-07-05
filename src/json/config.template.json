@@ -1,0 +1,9 @@
+{
+    "_TOKEN": "discord token",
+    "_PREFIX": "bot prefix",
+    "_PointsDelay": 120000,
+    "_DataBaseURL":"database url",
+    "_dbname":"database name",
+    "_dbusername":"database user username",
+    "_dbpassword":"database user password"
+}
