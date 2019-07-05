@@ -1,0 +1,19 @@
+[{
+    "status": "online",
+    "afk": false,
+    "game": {
+        "name": "your `wh?help`",
+        "url": "maix-world.ovh",
+        "type": "WATCHING"
+    }
+},
+{
+    "status": "online",
+    "afk": false,
+    "game": {
+        "name": "your commands",
+        "url": "maix-world.ovh",
+        "type": "LISTENING"
+    }
+}
+]

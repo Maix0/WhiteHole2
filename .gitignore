@@ -1,6 +1,5 @@
 **/node_modules/**
 **/.vscode/**
-**/*.ts
 **/config.json
 **/tsconfig.json
 **/types.js

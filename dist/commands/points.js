@@ -103,7 +103,6 @@ module.exports = {
                 break;
             default:
                 return message.channel.send(this.usage);
-                break;
         }
     }
 };

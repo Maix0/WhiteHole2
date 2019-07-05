@@ -23,7 +23,7 @@ module.exports = {
     permission: ["admin"],
     name: 'role',
     description: 'manage roles',
-    usage: "<role> <create|delete|set> <points>",
+    usage: "create|delete|set <role>  <points>",
     aliases: [],
     async execute(message, args) {
         if (!args) {
