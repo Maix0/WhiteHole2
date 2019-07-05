@@ -19,7 +19,7 @@ const bot: Types.DiscordBot | any = new Discord.Client({
 
 bot.commands = new Discord.Collection();
 
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+const commandFiles = fs.readdirSync('./dist/commands').filter(file => file.endsWith('.js'));
 const startupTime = Date.now()
 
 

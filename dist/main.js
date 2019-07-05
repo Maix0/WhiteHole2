@@ -22,7 +22,7 @@ const bot = new Discord.Client({
     disableEveryone: true
 });
 bot.commands = new Discord.Collection();
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+const commandFiles = fs.readdirSync('./dist/commands').filter(file => file.endsWith('.js'));
 const startupTime = Date.now();
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);

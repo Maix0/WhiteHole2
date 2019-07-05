@@ -30,7 +30,7 @@ module.exports = {
 }
 
 const commandsList: Discord.Collection<string,Types.Command> = new Discord.Collection();
-const commandFiles = fs.readdirSync('./commands').filter((file:any) => file.endsWith('.js'));
+const commandFiles = fs.readdirSync('./dist/commands').filter((file:any) => file.endsWith('.js'));
 for (const file of commandFiles) {
     const command: Types.Command = require(`./${file}`);
     if(command.permission) {
