@@ -1,20 +1,20 @@
 import * as Discord from "discord.js";
 import ytdl = require('ytdl-core');
 const queue: Discord.Collection<string, {queue:string[],dispatcher?:any}>  = new Discord.Collection()
-export function GetQueueFromID(guildID: string): {queue:string[],dispatcher?:any} | undefined {
+export function GetQueueFromID(guildID: string){
     createQueue(guildID)
-    return queue.get(guildID)
+    return queue.get(guildID)!
 }
 export function createQueue(guildID: string) : void {
     if (!queue.has(guildID)) {
         queue.set(guildID, {
-            queue: []
+            queue: [],
         }) 
     }
 }
 export function shiftQueue(guildID: string) {
     createQueue(guildID)
-    queue.get(guildID)!.queue.shift()
+    queue.get(guildID)!.dispatcher.end()
 }
 export function addToQueue(guildID: string, musicURL: string) {
     createQueue(guildID)
@@ -32,12 +32,13 @@ export function playMusic(guildID: string, connection: Discord.VoiceConnection) 
             }))
             queue.get(guildID)!.queue.shift();
             queue.get(guildID)!.dispatcher.on("end", () => {
-                if (!queue.get(guildID!).queue) return;
+                if (!queue.get(guildID)!.queue) return 
                 if (queue.get(guildID)!.queue[0]) {
                     playMusic(guildID, connection)
-                    return;
+                    return 
                 } else {
                     connection.disconnect();
+                    return
                 }
             })
         } else {
@@ -48,7 +49,15 @@ export function playMusic(guildID: string, connection: Discord.VoiceConnection) 
         queue.get(guildID)!.queue.shift()
         playMusic(guildID, connection)
     }
+    return
 }
 export function getGlobalQueue() {
     return queue
+}
+export function deleteQueue(guildID:string) {
+    createQueue(guildID)
+    queue.get(guildID)!.queue = []
+    if (queue.get(guildID) !.dispatcher) {
+        queue.get(guildID) !.dispatcher.end()
+    }
 }
