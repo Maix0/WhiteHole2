@@ -12,7 +12,7 @@ module.exports = {
     name: 'stop',
     description: 'Stop the music',
     permission: [],
-    usage: "",
+    usage: " ",
     aliases: [],
     async execute(message, args) {
         if (!message.guild.voiceConnection) {

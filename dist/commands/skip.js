@@ -12,7 +12,7 @@ module.exports = {
     name: 'skip',
     description: 'Skip current music',
     permission: [],
-    usage: "",
+    usage: " ",
     aliases: [],
     async execute(message, args) {
         MusicStatic.shiftQueue(message.guild.id);

@@ -5,7 +5,7 @@ module.exports = {
     name: 'stop',
     description: 'Stop the music',
     permission: [],
-    usage: "",
+    usage: " ",
     aliases: [],
     async execute(message: Discord.Message, args: string[]) {
         if(!message.guild.voiceConnection) {

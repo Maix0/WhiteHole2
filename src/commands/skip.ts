@@ -4,7 +4,7 @@ module.exports = {
     name: 'skip',
     description: 'Skip current music',
     permission: [],
-    usage: "",
+    usage: " ",
     aliases: [],
     async execute(message: Discord.Message, args: string[]) {
         MusicStatic.shiftQueue(message.guild.id)

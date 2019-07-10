@@ -9,6 +9,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const Discord = __importStar(require("discord.js"));
 const ytdl = require("ytdl-core");
+var StreamTypes;
+(function (StreamTypes) {
+    StreamTypes["YOUTUBE"] = "f";
+    StreamTypes["SPOTIFY"] = "s";
+})(StreamTypes = exports.StreamTypes || (exports.StreamTypes = {}));
 const queue = new Discord.Collection();
 function GetQueueFromID(guildID) {
     createQueue(guildID);
@@ -28,9 +33,12 @@ function shiftQueue(guildID) {
     queue.get(guildID).dispatcher.end();
 }
 exports.shiftQueue = shiftQueue;
-function addToQueue(guildID, musicURL) {
+function addToQueue(guildID, musicURL, type) {
     createQueue(guildID);
-    queue.get(guildID).queue.push(musicURL);
+    queue.get(guildID).queue.push({
+        url: musicURL,
+        type: type
+    });
 }
 exports.addToQueue = addToQueue;
 function playMusic(guildID, connection) {
@@ -39,27 +47,36 @@ function playMusic(guildID, connection) {
         connection.disconnect();
     }
     if (queue.get(guildID).queue[0] !== undefined) {
-        if (ytdl.validateURL(queue.get(guildID).queue[0])) {
-            queue.get(guildID).dispatcher = connection.playStream(ytdl(queue.get(guildID).queue[0], {
-                filter: "audioonly"
-            }));
-            queue.get(guildID).queue.shift();
-            queue.get(guildID).dispatcher.on("end", () => {
-                if (!queue.get(guildID).queue)
-                    return;
-                if (queue.get(guildID).queue[0]) {
-                    playMusic(guildID, connection);
-                    return;
+        switch (queue.get(guildID).queue[0].type) {
+            case StreamTypes.YOUTUBE:
+                if (ytdl.validateURL(queue.get(guildID).queue[0].url)) {
+                    queue.get(guildID).dispatcher = connection.playStream(ytdl(queue.get(guildID).queue[0].url, {
+                        filter: "audioonly"
+                    }));
+                    queue.get(guildID).queue.shift();
+                    queue.get(guildID).dispatcher.on("end", () => {
+                        if (!queue.get(guildID).queue)
+                            return;
+                        if (queue.get(guildID).queue[0]) {
+                            playMusic(guildID, connection);
+                            return;
+                        }
+                        else {
+                            connection.disconnect();
+                            return;
+                        }
+                    });
                 }
                 else {
-                    connection.disconnect();
-                    return;
+                    queue.get(guildID).queue.shift();
+                    playMusic(guildID, connection);
                 }
-            });
-        }
-        else {
-            queue.get(guildID).queue.shift();
-            playMusic(guildID, connection);
+                break;
+            case StreamTypes.SPOTIFY:
+            default:
+                queue.get(guildID).queue.shift();
+                playMusic(guildID, connection);
+                break;
         }
     }
     else {
