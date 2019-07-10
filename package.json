@@ -5,7 +5,7 @@
 	"main": "dist/main.js",
 	"scripts": {
 		"build": "tsc -w",
-		"start": "cdate=$(date) && node . > ./log/$cdate.log"
+		"start": "cdate=$(date) && node . > ./log/$cdate.log && tail ./log/$cdate.log"
 	},
 	"keywords": [
 		"discordjs"
