@@ -1,51 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const Mongoose = require("mongoose");
-const Perms = require("../permissions.json");
+const Perms = require("../json/perms.json");
 const Schemas = {
     Perms: require("../models/permission")
 };
-async function getPermissionData(guildID, userID) {
-    let qPerms = await Schemas.Perms.findOne({
-        guildID: guildID,
-        userID: userID
-    }).exec();
-    if (!qPerms) {
-        qPerms = new Schemas.Perms({
-            _id: Mongoose.Types.ObjectId(),
-            guildID: guildID,
-            userID: userID,
-            permission: 0
-        });
-        qPerms.save();
-    }
-    return qPerms;
-}
-function GetPermissionsObj(long) {
-    var permission_value = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    var permission_name = ["admin", "points"];
-    const UserPermission = {};
-    for (var index = 0; index < permission_name.length; index++) {
-        var byte = long & 0xff;
-        permission_value[index] = byte;
-        long = (long - byte) / 256;
-    }
-    for (let index = 0; index < permission_value.length; index++) {
-        const bit = permission_value[index];
-        UserPermission[permission_name[index]] = bit;
-    }
-    return UserPermission;
-}
-;
-function CreatePermissionsIntFromObj(permsOBJ) {
-    let byteArray = Object.values(permsOBJ);
-    var value = 0;
-    for (var i = byteArray.length - 1; i >= 0; i--) {
-        value = (value * 256) + byteArray[i];
-    }
-    return value;
-}
-;
+const StaticPerm = require("../static/permission");
 module.exports = {
     permission: ["admin"],
     name: 'permission',
@@ -68,18 +28,17 @@ module.exports = {
                 if (!Perms.permissions.includes(args[2])) {
                     return message.channel.send(`Error : invalid permission \n List of all permission : \n \`${Perms.permissions.join(" ")}\``);
                 }
-                let uPermsData = await getPermissionData(message.guild.id, tUser.id);
-                let uPermsList = GetPermissionsObj(uPermsData.permission);
+                let uPermsData = await StaticPerm.getFromIDs(message.guild.id, tUser.id);
+                let uPermsList = StaticPerm.getObject(uPermsData.permission);
                 if (uPermsList[args[2]] === 1) {
                     return message.channel.send("Error : permission already granted");
                 }
                 else {
                     uPermsList[args[2]] = 1;
-                    let nPerm = CreatePermissionsIntFromObj(uPermsList);
                     Schemas.Perms.updateOne({
                         _id: uPermsData._id
                     }, {
-                        permission: CreatePermissionsIntFromObj(uPermsList)
+                        permission: StaticPerm.getNumber(uPermsList)
                     }).exec()
                         .then(() => {
                         message.channel.send(`Permission \`${args[2]}\` has succesfully been granted to targeted user`);
@@ -90,30 +49,27 @@ module.exports = {
                 if (!args[2]) {
                     return message.channel.send(this.usage);
                 }
-                let ruPermsData = await getPermissionData(message.guild.id, tUser.id);
-                let ruPermsList = GetPermissionsObj(ruPermsData.permission);
-                let ruPermsListActive = Object.keys(GetPermissionsObj(ruPermsData.permission)).map(value => { if (ruPermsList[value])
-                    return value; });
+                let ruPermsData = await StaticPerm.getFromIDs(message.guild.id, tUser.id);
+                let ruPermsList = StaticPerm.getObject(ruPermsData.permission);
+                let ruPermsListActive = StaticPerm.getActive(ruPermsList);
                 if (!ruPermsListActive.includes(args[2])) {
                     return message.channel.send("Error Can't revoke : Permission isn't granted to user targeted");
                 }
                 ruPermsList[args[2]] = 0;
-                let nPerm = CreatePermissionsIntFromObj(ruPermsList);
                 Schemas.Perms.updateOne({
                     _id: ruPermsData._id
                 }, {
-                    permission: CreatePermissionsIntFromObj(ruPermsList)
+                    permission: StaticPerm.getNumber(ruPermsList)
                 }).exec()
                     .then(() => {
                     message.channel.send(`Permission \`${args[2]}\` has succesfully been revoked from targeted user`);
                 });
                 break;
             case "get":
-                let userPdata = await getPermissionData(message.guild.id, tUser.id);
-                let userPlist = GetPermissionsObj(userPdata.permission);
+                let userPdata = await StaticPerm.getFromIDs(message.guild.id, tUser.id);
+                let userPlist = StaticPerm.getObject(userPdata.permission);
                 return message.channel.send(` <@${tUser.id}>'s permission(s) : \n ${Object.keys(userPlist).map((value) => { if (userPlist[value])
                     return `\`${value}\``; }).join(" ")}`);
-                break;
             default:
                 return message.channel.send(this.usage);
         }

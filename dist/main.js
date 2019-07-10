@@ -10,19 +10,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Discord = __importStar(require("discord.js"));
 const fs = __importStar(require("fs"));
 const Mongoose = require("mongoose");
-// import * as Mongoose from "mongoose"
-const config = require("./config.json");
+const config = require("./json/config.json");
 const Schemas = {
     UserData: require("./models/userData"),
     Rank: require("./models/rank"),
     Perms: require("./models/permission")
 };
-const StatusMessage = require("./status.json");
+const StaticPerm = require("./static/permission");
+const StatusMessage = require("./json/status.json");
 const bot = new Discord.Client({
     disableEveryone: true
 });
 bot.commands = new Discord.Collection();
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+const commandFiles = fs.readdirSync('./dist/commands').filter(file => file.endsWith('.js'));
+const startupTime = Date.now();
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     if (!command.usage) {
@@ -48,10 +49,10 @@ Mongoose.connect(config._DataBaseURL, {
     
     useNewUrlParser: true
 } */).then(() => {
-    console.log("Connected To DataBase");
+    console.log(`Connected To DataBase in ${Date.now() - startupTime}ms`);
 });
 bot.on("ready", async function () {
-    console.log("White Hole V2 [BETA] Online");
+    console.log(`White Hole V2 [BETA] Online in ${Date.now() - startupTime}ms`);
     let statusCounter = 0;
     bot.user.setPresence(StatusMessage[statusCounter]).catch((err) => {
         if (err)
@@ -85,13 +86,9 @@ bot.on("message", async function (message) {
     if (!command)
         return;
     if (command.permission.length) {
-        let uPermsData = await getPermissionData(message.guild.id, message.author.id);
-        let uPermsList = GetPermissionsObj(uPermsData.permission);
-        let uActivePerms = Object.keys(uPermsList).filter(function (value, index, array) {
-            if (uPermsList[value]) {
-                return value.toLowerCase();
-            }
-        });
+        let uPermsData = await StaticPerm.getFromIDs(message.guild.id, message.author.id); // await getPermissionData(message.guild.id, message.author.id)
+        let uPermsList = StaticPerm.getObject(uPermsData.permission);
+        let uActivePerms = StaticPerm.getActive(uPermsList);
         let uHasPermission = false;
         uActivePerms.forEach(function (perm) {
             if (command.permission.includes(perm)) {
@@ -115,7 +112,7 @@ async function PointsModules(userdata, message) {
     if ((userdata.pointsModule.lastMessage + config._PointsDelay < message.createdTimestamp) && (!message.content.startsWith(config._PREFIX))) {
         userdata.pointsModule.points += Math.floor(Math.random() * 10 + 10);
         userdata.pointsModule.lastMessage = message.createdTimestamp;
-        UpdateUserData(userdata);
+        await UpdateUserData(userdata);
         let OrderedRoles = await GetRoles(message.guild.id);
         OrderedRoles.forEach((role) => {
             if (userdata.pointsModule.points >= role.points) {
@@ -151,6 +148,7 @@ async function UpdateUserData(userdata) {
     let update = await Schemas.UserData.updateOne({
         _id: userdata._id
     }, userdata);
+    console.log(update);
 }
 async function GetRoles(guildID) {
     let roles = await Schemas.Rank.find({
@@ -162,35 +160,3 @@ async function GetRoles(guildID) {
         .exec();
     return roles;
 }
-async function getPermissionData(guildID, userID) {
-    let qPerms = await Schemas.Perms.findOne({
-        guildID: guildID,
-        userID: userID
-    }).exec();
-    if (!qPerms) {
-        qPerms = new Schemas.Perms({
-            _id: Mongoose.Types.ObjectId(),
-            guildID: guildID,
-            userID: userID,
-            permission: 0
-        });
-        qPerms.save();
-    }
-    return qPerms;
-}
-function GetPermissionsObj(long) {
-    var permission_value = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    var permission_name = ["admin", "points"];
-    const UserPermission = {};
-    for (var index = 0; index < permission_name.length; index++) {
-        var byte = long & 0xff;
-        permission_value[index] = byte;
-        long = (long - byte) / 256;
-    }
-    for (let index = 0; index < permission_value.length; index++) {
-        const bit = permission_value[index];
-        UserPermission[permission_name[index]] = bit;
-    }
-    return UserPermission;
-}
-;

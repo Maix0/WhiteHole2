@@ -4,16 +4,7 @@ const Schemas = {
     UserData: require("../models/userData"),
     Rank: require("../models/rank")
 };
-async function GetRoles(guildID) {
-    let roles = await Schemas.Rank.find({
-        guildID: guildID
-    })
-        .sort({
-        points: "asc"
-    })
-        .exec();
-    return roles;
-}
+const StaticRole = require("../static/rank");
 function rankCreateBar(cRolePoints, uPoints, nRolePoints) {
     let pbPercentage = Math.round((uPoints - cRolePoints) / (nRolePoints - cRolePoints) * 10);
     let pb = "";
@@ -36,12 +27,12 @@ module.exports = {
     name: 'rank',
     description: 'show your server rank',
     permission: [],
-    usage: "<user>",
+    usage: "<?user>",
     aliases: ["profile"],
     async execute(message, args) {
         let rUser = message.mentions.members.first() ? message.mentions.members.first() : message.member;
         let rUserData = await getUserDataFromID(message.guild.id, rUser.id);
-        let gRoles = await GetRoles(message.guild.id);
+        let gRoles = await StaticRole.GetRolesOrdered(message.guild.id);
         let gRoleBefore = [];
         let gRoleAfter = [];
         let rRoles = {};
