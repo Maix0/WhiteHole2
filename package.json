@@ -5,7 +5,7 @@
 	"main": "dist/main.js",
 	"scripts": {
 		"build": "tsc -w",
-		"start": "cdate=$(date) && nodemon . > ./log/$cdate.log"
+		"start": "cdate=$(date) && node . > ./log/$cdate.log"
 	},
 	"keywords": [
 		"discordjs"
@@ -16,6 +16,8 @@
 		"discord.js": "^11.5.1",
 		"mongoose": "^5.5.15",
 		"node-opus": "^0.3.2",
+		"request": "^2.88.0",
+		"request-promise-native": "^1.0.7",
 		"ytdl-core": "^0.29.2"
 	},
 	"devDependencies": {
