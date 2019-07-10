@@ -40,15 +40,15 @@ module.exports = {
             default:
                 return message.channel.send(`usage :\`${this.usage}\``)
         }
-        if(message.guild.voiceConnection.channel.id != message.member.voiceChannel.id){
-            return message.channel.send("Error , not in same channel")
-        }
         if (!message.guild.voiceConnection) {
             let voiceConnection = await message.member.voiceChannel.join()
             if (!voiceConnection) {
                 return message.channel.send("Error, can't join voice channel")
             }
             MusicStatic.playMusic(message.guild.id, voiceConnection)
+        }
+        if(message.guild.voiceConnection.channel.id != message.member.voiceChannel.id){
+            return message.channel.send("Error , not in same channel")
         }
     }
 }
